@@ -1,0 +1,50 @@
+Node list                    : node060
+Number of nodes allocated    : 1 or 1
+Number of threads or processes : 40
+Number of processes per node : 40
+Scheduling priority          : 0
+compiling mpi.c to mpi.exe
+
+
+compiling for 40 MPI processes
+------------------------------------------------------------------------
+This is running process 1
+The size of the matrix is 500*500
+
+Initializing...
+
+execute time: 0.019769
+running complete
+------------------------------------------------------------------------
+This is running process 2
+The size of the matrix is 500*500
+
+Initializing...
+
+execute time: 0.019969
+running complete
+------------------------------------------------------------------------
+This is running process 3
+The size of the matrix is 500*500
+
+Initializing...
+
+execute time: 0.019811
+running complete
+------------------------------------------------------------------------
+This is running process 4
+The size of the matrix is 500*500
+
+Initializing...
+
+execute time: 0.019941
+running complete
+------------------------------------------------------------------------
+This is running process 5
+The size of the matrix is 500*500
+
+Initializing...
+
+execute time: 0.019794
+running complete
+------------------------------------------------------------------------

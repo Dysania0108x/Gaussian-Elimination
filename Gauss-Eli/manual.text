@@ -1,0 +1,35 @@
+User manual:
+
+1. How to run openMP
+
+# use bash to create slurm.out files.
+Usage: sbatch  -c N ./openmp.sh openmp_gauss.c
+(t is timelimit; -c is number of cpus/threads being used.)
+example: $ sbatch -c 1 ./openmp.sh openmp_gauss.c
+# check for slurm.out files.
+cat slurm_ompXX.out
+
+# Directly call openmp on terminal.
+# Easy to test matrix of different size.
+## intel compiler
+module load compilers/intel 
+./openmp_gauss.exe <size of matrix> <number of threads>
+# example:(a 4*4 matrix and one thread)
+./openmp_gauss.exe 4 1
+
+2. How to run MPI
+
+(-n is the number of processes. Here n is 12, 12 processes.)
+sbatch -n 12 ./mpi_run.sh mpi.c 
+# check for slurm.out files
+cat slurm_mpiXX.out
+
+# Directly call mpi on terminal.
+# Easy to test matrix of different size.
+## intel compiler
+module load compilers/intel 
+## intel mpi wrapper and run time
+module load mpi/intel-mpi/2019u5/bin
+mpirun -n 3 ./mpi.exe <size of input matrix>
+# example: (a 500*500 matrix)
+mpirun -n 3 ./mpi.exe 500
