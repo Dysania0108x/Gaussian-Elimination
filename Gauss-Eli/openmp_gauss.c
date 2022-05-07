@@ -6,7 +6,7 @@
 
 /* Program paras */
 #define PRAN 2000  /* Max value of N */
-int N;  /* Matrix size */
+int n;  /* Matrix size */
 int thread_num;
 /* Matrices and vectors */
 double A[PRAN][PRAN], B[PRAN], X[PRAN];
@@ -20,7 +20,7 @@ void paras(int argc, char **argv)
 {
 
   if (argc >= 3) {
-    N = atoi(argv[1]);
+    n = atoi(argv[1]);
 	  thread_num = atoi(argv[2]);
   }
   else {
@@ -34,16 +34,16 @@ void paras(int argc, char **argv)
 
 /* Initialize A and B (and X to 0.0s) */
 void initialize_inputs() {
-  int row, col;
+  int i,j;
 
-  printf("\nInitializing...\n");
+  printf("\nInitializing input matrix...\n");
   printf(" \n");
-  for (col = 0; col < N; col++) {
-    for (row = 0; row < N; row++) {
-      A[row][col] = rand() / 32768.0;
+  for (j = 0; j < n; j++) {
+    for (i = 0; i < n; i++) {
+      A[i][j] = rand() / 32768.0;
     }
-    B[col] = rand() / 32768.0;
-    X[col] = 0.0;
+    B[j] = rand() / 32768.0;
+    X[j] = 0.0;
   }
 
 }
@@ -52,10 +52,10 @@ void initialize_inputs() {
 void print_inputs() {
   int i,j;
 	printf("Displaying Initial Matrix.\n");
-	for (i=0;i<N;i++)
+	for (i=0;i<n;i++)
 	{
 		printf("| ");
-		for(j=0;j<N; j++)
+		for(j=0;j<n; j++)
 		{	
 			printf("%lf ",A[i][j]);
 		}
@@ -67,7 +67,7 @@ void printAnswer()
 {
 	int i;
 	printf("\nSolution array x:\n\n");
-	for (i=0;i<N;i++)
+	for (i=0;i<n;i++)
 	{
 		printf("|%lf|\n", X[i]);
 	}	
@@ -114,28 +114,27 @@ void Gaussia_elimination() {
 
 */
  omp_set_num_threads(thread_num);
- int norm, row, col;
-  for (norm = 0; norm < N - 1; norm++) {
+ int norm, i, j;
+  for (norm = 0; norm < n - 1; norm++) {
     #pragma omp parallel for shared(A, B) private(norm) 
-    for ( row = norm + 1; row < N; row++) {
-     float multiplier = A[row][norm] / A[norm][norm];
-      for (col = norm; col < N; col++) {
-	         A[row][col] -= A[norm][col] * multiplier;
+    for ( i = norm + 1; i < n; i++) {
+      float multip = A[i][norm] / A[norm][norm];
+      for (j = norm; j < n; j++) {
+           A[i][j] -= A[norm][j] * multip;
       }
-      B[row] -= B[norm] * multiplier;
+      B[i] -= B[norm] * multip;
     }
   }
-
 }
 void backs(){
 	
 	/* Back substitution */
-  int row, col;
-  for (row = N - 1; row >= 0; row--) {
-    X[row] =B[row];
-    for (col = N-1; col > row; col--) {
-      X[row] -= A[row][col] * X[col];
+  int i, j;
+  for (i = n - 1; i >= 0; i--) {
+    X[i] =B[i];
+    for (j = n-1; j > i; j--) {
+      X[i] -= A[i][j] * X[j];
     }
-    X[row] /= A[row][row];
+    X[i] /= A[i][i];
   }
 }

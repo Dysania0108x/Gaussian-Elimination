@@ -39,17 +39,17 @@ void paras(int argc, char **argv)
 
 /* Initialize A and B (and X to 0.0s) */
 void initialize_inputs(double *A,double *B,double *X,int N) {
-  int row, col;
+  int i,j;
 
-  printf("\nInitializing...\n");
-  for (col = 0; col < N; col++) {
-    for (row = 0; row < N; row++) {
-      A[row*N+col] = rand() / 32768.0;
-      //A[row*N+col] = rand();
+  printf("\nInitializing input matrix...\n");
+  for (j = 0; j < N; j++) {
+    for (i = 0; i < N; i++) {
+      A[i*N+j] = rand() / 32768.0;
+      //A[i*N+j] = rand();
     }
-    B[col] = rand() / 32768.0;
-     //B[col] = rand();
-    X[col] = 0.0;
+    B[j] = rand() / 32768.0;
+     //B[j] = rand();
+    X[j] = 0.0;
   }
 
 }
@@ -150,8 +150,8 @@ else
 /* send data and recv result by  master proc*/
 		if (myid == 0) {
 			A = (double*)malloc(n * n * sizeof(double));
-		B = (double*)malloc(n * sizeof(double));
-		X= (double*)malloc(n  * sizeof(double));
+			B = (double*)malloc(n * sizeof(double));
+			X= (double*)malloc(n  * sizeof(double));
 		
 		initialize_inputs(A,B,X,n);
 		//int i; int j;
@@ -233,20 +233,20 @@ core
 3) When one equation is multiplied by the number k plus another equation, the solution remains unchanged
  */
 void Gaussia_elimination(double *A,double *B,double *X,int M,int N) {
-  int norm, row, col;  /* Normalization row, and zeroing element row and col */
-  double multiplier;
+  int norm, i,j;  /* Normalization row, and zeroing element row and col */
+  double multip;
 
  
  
   for (norm = 0; norm < N - 1; norm++) {
-    for (row = norm + 1; row < M; row++) {
-      multiplier = A[row*N+norm] / A[norm*N+norm];
+    for (i = norm + 1; i < M; i++) {
+      multip = A[i*N+norm] / A[norm*N+norm];
   
-   for (col = norm; col < N; col++) {
-	         A[row*N+col] -= A[norm*N+col] * multiplier;
+   for (j = norm; j < N; j++) {
+	         A[row*N+j] -= A[norm*N+j] * multip;
       }
 	  
-      B[row] -= B[norm] * multiplier;
+      B[i] -= B[norm] * multip;
     }
   }
  
@@ -255,13 +255,13 @@ void Gaussia_elimination(double *A,double *B,double *X,int M,int N) {
 void backs(double *X,double *A,double *B,int M,int N){
 	
 	/* Back substitution */
-  int row, col;
-  for (row = M - 1; row >= 0; row--) {
-    X[row] =B[row];
-    for (col = N-1; col > row; col--) {
-      X[row] -= A[row*N+col] * X[col];
+  int i,j;
+  for (i = M - 1; i >= 0; i--) {
+    X[i] =B[i];
+    for (j = N-1; j> i; j--) {
+      X[i] -= A[i*N+j] * X[j];
     }
-    X[row] /= A[row*N+row];
+    X[i] /= A[i*N+i];
   }
 }
 
