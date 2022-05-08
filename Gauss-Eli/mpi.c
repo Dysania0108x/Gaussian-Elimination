@@ -12,12 +12,11 @@ int i;
 int j;
 /* A * X = B, solve for X */
 
-	MPI_Status status;
+MPI_Status status;
 /* Prototype */
 void Gaussia_elimination(double *A,double *B,double *X,int M,int N);  
 void backs(double *X,double *A,double *B,int M,int N);
 
-/* Set the program paras from the command-line arguments */
 void paras(int argc, char **argv) 
 {
 
@@ -91,12 +90,12 @@ int factor(int n) {
 int main(int argc, char **argv) {
 	double *A,*B,*X;
 	double t1,t2;
-  MPI_Init(&argc,&argv);//Initiating MPI
+  	MPI_Init(&argc,&argv);//Initiating MPI
 	MPI_Comm_rank(MPI_COMM_WORLD, &myid);
 	MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
 		
   /* Process program paras */
-  paras(argc, argv);
+  	paras(argc, argv);
   /*
   
   In distributed parallel computing, the master-slave mode is one of the classical modes, 
@@ -107,25 +106,25 @@ int main(int argc, char **argv) {
   t1=MPI_Wtime();
 if(comm_sz == 1){
 	A = (double*)malloc(N * N * sizeof(double));
-		B = (double*)malloc(N * sizeof(double));
-		X= (double*)malloc(N  * sizeof(double));
-  /* Initialize A and B */
-  initialize_inputs(A,B,X,N);
+	B = (double*)malloc(N * sizeof(double));
+	X= (double*)malloc(N  * sizeof(double));
+    /* Initialize A and B */
+    initialize_inputs(A,B,X,N);
   
-  //serial compute
-  Gaussia_elimination(A,B,X,N,N);
-  backs(X,A,B,N,N);
-  t2=MPI_Wtime();
+    //serial compute
+    Gaussia_elimination(A,B,X,N,N);
+    backs(X,A,B,N,N);
+    t2=MPI_Wtime();
 
 		
 	
   /* Print input matrices */
-//  print_inputs();
-//printAnswer(X,N);
+  //  print_inputs();
+  //printAnswer(X,N);
 
-		free(A);
-		free(B);
-		free(X);
+	free(A);
+	free(B);
+	free(X);
 }
 else
 {
@@ -138,20 +137,20 @@ else
 			N += (comm_sz - 1);
 	}
 	//get last block
-		int addnum = N - saveN;
-		//compute x and y position length
-		int a = (comm_sz - 1) / factor(comm_sz - 1);
-		int b = factor(comm_sz - 1);
-		//compute row  and column length of block
-		int each_row = N / a;
-		int each_column = N / b;
-		int n=N;//update length of N
-		// use master and slave method for parallel compute
-/* send data and recv result by  master proc*/
-		if (myid == 0) {
-			A = (double*)malloc(n * n * sizeof(double));
-			B = (double*)malloc(n * sizeof(double));
-			X= (double*)malloc(n  * sizeof(double));
+	int addnum = N - saveN;
+	//compute x and y position length
+	int a = (comm_sz - 1) / factor(comm_sz - 1);
+	int b = factor(comm_sz - 1);
+	//compute row  and column length of block
+	int each_row = N / a;
+	int each_column = N / b;
+	int n=N;//update length of N
+	// use master and slave method for parallel compute
+    /* send data and recv result by  master proc*/
+	if (myid == 0) {
+		A = (double*)malloc(n * n * sizeof(double));
+		B = (double*)malloc(n * sizeof(double));
+		X= (double*)malloc(n  * sizeof(double));
 		
 		initialize_inputs(A,B,X,n);
 		//int i; int j;
@@ -186,11 +185,10 @@ else
 			t2=MPI_Wtime();
 			 //printAnswer(X,saveN);
 			free(A);
-		free(B);
-		free(X);
-				
+			free(B);
+			free(X);		
 		}
-		else {
+	else {
 			//recv A and B ,then parallel compute by other proc,and send result of C to master  
 			double *partA, *partB, *partC;
 			partA = (double*)malloc(each_row * n * sizeof(double));
@@ -205,24 +203,21 @@ else
 				MPI_Recv(&partB[j], 1, MPI_DOUBLE, 0, j + comm_sz, MPI_COMM_WORLD, &status);
 			}
 			Gaussia_elimination(partA,partB,partC,each_row,n);
-			 backs(partC,partA,partB,each_row,N);
+			backs(partC,partA,partB,each_row,N);
 			// Send: partC
 			for (j = 0; j < each_row; j++) {
 				MPI_Send(&partC[j], 1, MPI_DOUBLE, 0,  2000, MPI_COMM_WORLD);
 			}
 			free(partA);
-		free(partB);
-		free(partC);
-			
-		}
-		
-		
+			free(partB);
+			free(partC);	
+		}	
 }
 if(myid==0){
 		printf("\nexecute time: %lf\n",t2-t1);
 	}
 MPI_Finalize(); //Finalizing the MPI
-  	return 0;
+return 0;
 }
 
 /* 
@@ -233,7 +228,7 @@ core
 3) When one equation is multiplied by the number k plus another equation, the solution remains unchanged
  */
 void Gaussia_elimination(double *A,double *B,double *X,int M,int N) {
-  int norm, i,j;  /* Normalization row, and zeroing element row and col */
+  int norm, i,j;  
   double multip;
 
  
